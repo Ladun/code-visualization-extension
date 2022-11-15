@@ -1,4 +1,4 @@
-
+import { Node } from "./node.js";
 
 const vscode = acquireVsCodeApi();
 const menu_area = $(".menu_area")
@@ -22,6 +22,9 @@ window.addEventListener('message', event => {
 			
 			refresh.toggleClass("active");
 			refresh.find('i').attr('class', 'bx bx-refresh');
+			break;
+		case 'get_node_info':
+			draw_nodes(message.node_info);
 			break;
 	}
 });
@@ -53,17 +56,10 @@ function update_list(){
 
 	refresh.toggleClass("active");
 	refresh.find('i').attr('class', 'bx bx-loader-alt');
-    find_files();
+    find_functions();
 }
 
 // ================= function list setting ================= // 
-
-$('.function_item').on('click', function(){
-    var function_name = $(this).find('.function_name').val();
-    var file_name = $(this).find('.file_name').val();
-    
-    console.log(function_name + "|" + file_name)
-});
 
 $('.search').change(()=>{
 	var target_t = $('.search').val();
@@ -89,27 +85,79 @@ $('.search').change(()=>{
 
 function add_function_list(function_info){
 	var function_name = function_info[0]
-	var file_name = function_info[1]
 
-	for(var i = 2; i < function_info.length; i++){
-		file_name += '<br/>' + function_info[i];
+	// Create new list content
+	const newListContent = $(`
+		<li class='function_item'>
+			<text class='function_name'>${function_name}</text>
+			<div class='divider'></div>
+			<div class='regions'></div>
+			
+		</li>`);
+
+	// Add click event
+	newListContent.on('click', function(){
+		var function_name = $(this).find('.function_name').text();
+		var regions = $(this).find('.file_name').get();
+		
+		var key = function_name;
+		for(var _s of regions){
+			var region = _s.innerHTML;
+			var tmpIdx = region.indexOf('(');
+			
+			if (tmpIdx > 0)
+				region = region.substring(0, tmpIdx).trim();
+			
+			key += "-" + region;
+		}
+
+		vscode.postMessage({
+			command: 'get_node_info',
+			key: key
+		})
+	});
+
+	// Add infomation about where the function is
+	for(var i = 1; i < function_info.length; i++){
+		newListContent.children('.regions').append(
+			`<text class='file_name'>${function_info[i]}</text>`
+		)
 	}
-
-    $('.function_list').append(`
-	<li class='function_item'>
-		<text class='function_name'>${function_name}</text>
-		<div class='divider'></div>
-		<text class='file_name'>${file_name}</text>
-	</li>`);
+	
+	// Add list content to list
+	$('.function_list').append(newListContent);
 }
 
 
-function find_files(){
+function find_functions(){
 	vscode.postMessage({
 		command: 'get_files'
 	})
 }
 
-function find_functions(file_name){
+function draw_nodes(node_infos){
+	console.log("Draw Node");
+	console.log(node_infos);
 
+	var x = 10, y = 10;
+
+	// Create main node
+	var mainNode = draw_node(node_infos[0], x, y);
+	var prevNode = mainNode;
+
+	for(var i = 1; i < node_infos.length; i++){
+		y += 30;
+		var curNode = draw_node(node_infos[i], x, y);
+		
+		prevNode = curNode;
+	}
+}
+
+function draw_node(info, x, y){
+	var info = info.split(",");
+	var node = new Node(info[0])
+	
+	node.moveTo({x: x, y: y});
+	node.initUI();
+	return node;
 }

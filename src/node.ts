@@ -40,6 +40,17 @@ class Node {
 
         this.ref_funcs = ref_funcs
     }
+
+    public get_regions(){
+        if(this.regions.length == 0){
+            return "";
+        }
+        var s = this.regions[0].name;
+        for(var i = 1; i < this.regions.length;i++)
+            s += ',' + this.regions[i].name;
+
+        return s;
+    }
 }
 
 export class Graph {
@@ -105,7 +116,8 @@ export class Graph {
                         if(inner_ret)
                         {
                             for(var ir of inner_ret){
-                                funcs.push(ir.substring(ir.length - 1))
+                                // TODO: find about where the function is 
+                                funcs.push(ir.substring(0, ir.length - 1).trim())
                             }
                         }
                     }
@@ -126,9 +138,9 @@ export class Graph {
             var ret = stck.pop();
             if (ret != null && ret.isFunc){
                 var key = ret.name + "-" + filename;
-                for(var ref_func of funcs)
+                for(var r of stck)
                 {
-                    key += "-" + ref_func
+                    key += "-" + r.name;
                 }
                 this.nodes.set(key, new Node(filename, ret.name, stck, funcs));
                 funcs = [];
@@ -157,6 +169,26 @@ export class Graph {
         panel.webview.postMessage({
             command: 'get_files',
             functions: functions
+        })
+    }
+
+    public post_node_info(key: string, panel: vscode.WebviewPanel){
+        var node = this.nodes.get(key)
+        if(!node){
+            console.error("No node " + key);
+            return;
+        }
+
+        var returns: Array<string> = [];
+        returns.push(node.func_name + "," + node.file_name)
+
+        for(var ref_func of node.ref_funcs){
+            returns.push(ref_func);
+        }
+
+        panel.webview.postMessage({
+            command: 'get_node_info',
+            node_info: returns
         })
     }
 }

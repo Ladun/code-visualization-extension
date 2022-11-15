@@ -79,7 +79,11 @@ export class MainViewPanel {
 					case 'get_files':
 						this._graph.update_nodes("e:/Dev/Project/BigBlobEye/AI/src/algo/ag_classifier", this._panel);
 						return;
-				}
+
+					case 'get_node_info':
+						this._graph.post_node_info(message.key, this._panel);
+						return;
+				}	
 			},
 			null,
 			this._disposables
@@ -193,8 +197,7 @@ export class MainViewPanel {
 			crossorigin="anonymous"
 			referrerpolicy="no-referrer"
 		></script>
-		<script src="${scriptNodeUri}" nonce="${nonce}"></script>
-		<script src="${scriptMainUri}" nonce="${nonce}"></script>
+		<script src="${scriptMainUri}" nonce="${nonce}" type='module'></script>
 		</html>`;
 	}
 }

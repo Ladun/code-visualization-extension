@@ -54,7 +54,7 @@ function GetFullOffset(element) {
 	} else return offset;
 }
 
-function Node(name) {
+export function Node(name) {
 	// DOM Element creation
 	this.domElement = document.createElement("div");
 	this.domElement.classList.add("node");
@@ -256,29 +256,29 @@ Node.prototype.initUI = function () {
 	this.updatePosition();
 };
 
-// Test nodes.
-var node01 = new Node("Generate Cube");
-node01.addInput("Name");
-node01.addInput("Size");
+// // Test nodes.
+// var node01 = new Node("Generate Cube");
+// node01.addInput("Name");
+// node01.addInput("Size");
 
-var node02 = new Node("Add");
-node02.addInput("Left&nbsp;&nbsp;&nbsp;&nbsp;");
-node02.addInput("Right&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+// var node02 = new Node("Add");
+// node02.addInput("Left&nbsp;&nbsp;&nbsp;&nbsp;");
+// node02.addInput("Right&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
 
-var node03 = new Node("Translate");
-node03.addInput("Object");
-node03.addInput("X");
-node03.addInput("Y");
-node03.addInput("Z");
+// var node03 = new Node("Translate");
+// node03.addInput("Object");
+// node03.addInput("X");
+// node03.addInput("Y");
+// node03.addInput("Z");
 
-// Move and connect.
-node01.moveTo({ x: 75, y: 125 });
-node02.moveTo({ x: 350, y: 20 });
-node03.moveTo({ x: 500, y: 150 });
-node01.connectTo(node02.inputs[0]);
-node03.connectTo(node02.inputs[1]);
+// // Move and connect.
+// node01.moveTo({ x: 75, y: 125 });
+// node02.moveTo({ x: 350, y: 20 });
+// node03.moveTo({ x: 500, y: 150 });
+// node01.connectTo(node02.inputs[0]);
+// node03.connectTo(node02.inputs[1]);
 
-// Add to canvas
-node01.initUI();
-node02.initUI();
-node03.initUI();
+// // Add to canvas
+// node01.initUI();
+// node02.initUI();
+// node03.initUI();
